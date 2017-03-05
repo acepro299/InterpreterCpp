@@ -1,65 +1,33 @@
-#include "./StringUtils.h"
+#ifndef STRINGUTILS_H
+#define STRINGUTILS_H
 
-StringUtils::StringUtils(std::string const& data){
-	this->data = data;
-}
+#include <string>
+#include <vector>
+#include <sstream>
+#include <iostream>
+#include <algorithm>
 
-StringUtils::~StringUtils(){
+class StringUtils{
+	private:
+	std::string data;
+	std::string currentIndexOf;
+	public:
 	
-}
-
-/*
-  @link https://github.com/ekg/split
-  @author @ekg
-  @type Method
-  @return vector with all contents string by delimiter
-  @string data to be delimited
-  @string delimiter using whatever character
-*/
-
-std::vector<std::string> const& StringUtils::split(std::string const& delimiter){
-	std::vector<std::string>& vecstr = *new std::vector<std::string>();
-	char* tok;
-	char cchars [this->data.size()+1];
-	char* cstr = &cchars[0];
-	strcpy(cstr, this->data.c_str());
-	tok = strtok(cstr,delimiter.c_str());
-	while(tok!=NULL){
-		vecstr.push_back(tok);
-		tok = strtok(NULL, delimiter.c_str());
+	~StringUtils();
+	StringUtils(std::string const& data);
+	std::vector<std::string> const& split(std::string const& delimiter);
+	std::size_t indexOf(std::string const& input);
+	bool contains(std::string const& input);
+	//std::string const& substring(std::size_t x,std::size_t y);
+	std::string const& substring(std::string const& x,std::string const& y);
+	std::string const& replace(std::string const& input,std::string const& output);
+	
+	template <class T>
+	static std::string const& toString(T const& object){
+		std::stringstream ss;
+    	ss << object;
+    	return ss.str();
 	}
-	return vecstr;
-}
+};
 
-std::size_t StringUtils::indexOf(std::string const& input){
-	this->currentIndexOf = input;
-	return this->data.find(input);
-}
-
-bool StringUtils::contains(std::string const& input){
-	return this->data.find(input)!=std::string::npos;
-}
-
-/*
-std::string const& StringUtils::substring(std::size_t x,std::size_t y){
-	StringUtils* stru = new StringUtils(this->data.substr(x,y));
-	stru->replace("(","");//temporary
-	stru->replace(")","");//temporary
-	std::string data = stru->replace(";","");//temporary
-	delete stru;
-	return data;
-	
-}*/
-
-
-std::string const& StringUtils::substring(std::string const& x,std::string const& y){
-	std::string result = this->data.substr(this->indexOf(x)+1,this->indexOf(y));
-	result.resize(result.length()-y.length());
-	return result;
-	
-}
-
-std::string const& StringUtils::replace(std::string const& input,std::string const& output){
-	std::replace(this->data.begin(),this->data.end(),*input.c_str(),*output.c_str());
-	return this->data;
-}
+#endif // STRINGUTILS_H
