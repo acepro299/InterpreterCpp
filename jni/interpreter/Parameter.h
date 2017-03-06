@@ -21,7 +21,10 @@ class Parameter{
 	bool hasVariable(int index);
     bool hasFunction(int index);
 	std::string const& getData();
-	std::string getString(int index);
+	std::string const& getString(int index);
+	char const* getChar(int index);
+	bool getBool(int index);
+	int getInt(int index);
 	std::string getArg(int index);
 	std::vector<std::string> const& getArgs();
 	int length();
