@@ -8,14 +8,16 @@ Interpreter::Interpreter(std::string const& data){
 
 Interpreter::~Interpreter(){
 	delete this->strutils;
-	delete this->listener;
+	for(Listener* listener : this->listeners){
+		delete listener;
+	}
 }
 
-void Interpreter::Listener::onRun(int line,std::string const& data){
-	std::string funcname = this->interpreter->getFunction(line);
+void Interpreter::runStandard(int line,std::string const& data){
+	std::string funcname = this->getFunction(line);
 	if(funcname=="log"){
 		std::string arg1;
-		Parameter* pmt = this->interpreter->getParameter(line);
+		Parameter* pmt = this->getParameter(line);
 		if(pmt->hasString(0)){
 			arg1 = pmt->getString(0);
 		}else{
@@ -23,9 +25,10 @@ void Interpreter::Listener::onRun(int line,std::string const& data){
 		}
 		std::cout << arg1 << std::endl;
 	}else if(funcname=="file_create"){
-		//FILE* file;
-		//file = fopen(this->interpreter->getParameter(line,0).c_str(),"w+");
-		//fclose(file);
+		FILE* file;
+		Parameter* pmt = this->getParameter(line);
+		file = fopen(pmt->getChar(0),"w+");
+		fclose(file);
 	}else{
 		return;
 	}
@@ -33,8 +36,9 @@ void Interpreter::Listener::onRun(int line,std::string const& data){
 
 void Interpreter::run(){
 	for(int i = 0;i<this->length();i++){
-		if(this->listener!=NULL){
-			this->listener->onRun(i,this->getData(i));
+		this->runStandard(i,this->getData(i));
+		for(Listener* listener : this->listeners){
+			listener->onRun(this,i,this->getData(i));
 		}
 	}
 }
@@ -120,4 +124,19 @@ bool Interpreter::containsFunction(std::string const& function){
 
 void Interpreter::append(std::string const& data){
 	this->data += data+"\n";
+}
+
+void Interpreter::addListener(Listener* listener){
+	this->listeners.push_back(listener);
+}
+	
+void Interpreter::removeListener(Listener* listener){
+	for(int i = 0;i<this->listeners.size();i++){
+	   	if(this->listeners[i]==listener)
+	       	this->listeners.erase(this->listeners.begin()+i);
+	}
+}
+
+std::vector<Interpreter::Listener*> const& Interpreter::listListener(){
+	return this->listeners;
 }
