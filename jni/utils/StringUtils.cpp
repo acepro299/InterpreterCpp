@@ -59,7 +59,23 @@ std::string const& StringUtils::substring(std::string const& x,std::string const
 	
 }
 
+std::string const& StringUtils::substring(int x,std::string const& y){
+	std::string result = this->data.substr(x,this->indexOf(y));
+	result.resize(result.length()-y.length());
+	return result;
+}
+
+std::string const& StringUtils::substring(int x,int y){
+	std::string result = this->data.substr(x,y);
+	return result;
+	
+}
+
 std::string const& StringUtils::replace(std::string const& input,std::string const& output){
 	std::replace(this->data.begin(),this->data.end(),*input.c_str(),*output.c_str());
+	return this->data;
+}
+
+std::string const& StringUtils::getData(){
 	return this->data;
 }
