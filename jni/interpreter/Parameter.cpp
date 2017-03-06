@@ -47,12 +47,33 @@ bool Parameter::hasFunction(int index){
 	return false;
 }
 
-std::string Parameter::getString(int index){
+std::string const& Parameter::getString(int index){
 	StringUtils*stru = new StringUtils(this->getArg(index));
 	stru->replace("\"","");
 	std::string result = stru->replace("'","");
 	delete stru;
 	return result;
+}
+
+char const* Parameter::getChar(int index){
+	StringUtils*stru = new StringUtils(this->getArg(index));
+	stru->replace("\"","");
+	stru->replace("\'","");
+	char* result = stru->getData().c_str();
+	delete stru;
+	return result;
+}
+
+bool Parameter::getBool(int index){
+	if(this->getArg(index)=="0"|this->getArg(index)=="false")
+		return false;
+	if(this->getArg(index)=="1"|this->getArg(index)=="true")
+		return true;
+	return false;
+}
+
+int Parameter::getInt(int index){
+	return StringUtils::toInt(this->getArg(index));
 }
 
 std::string Parameter::getArg(int index){
@@ -68,5 +89,6 @@ std::vector<std::string> const& Parameter::getArgs(){
 }
 
 int Parameter::length(){
-	return 0;
+	return this->getArgs().size();
 }
+
