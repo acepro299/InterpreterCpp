@@ -8,32 +8,23 @@
 #include <memory>
 #include "utils/StringUtils.h"
 #include "./Parameter.h"
+#include "./Variable.h"
 
 
 class Interpreter{
 	public:
 	class Listener{
 		public:
-		Interpreter* interpreter;
+		virtual void onRun(Interpreter*interpreter,int line,std::string const& data);
+	};
 		
-		virtual void onRun(int line,std::string const& data);
-	};
-	
-	enum ObjectType : int{
-		System,File
-	};
-	
 	private:
-	std::map<std::string,std::string> var_value;
-	std::map<std::string,ObjectType> var_type;
-	std::map<std::string,std::string> func_value;
-	std::map<std::string,ObjectType> func_type;
-	std::map<std::string,std::string> func_data;
-	
 	StringUtils* strutils;
 	std::string data;
 	std::vector<std::string> functions;	
-	Listener* listener;
+	std::vector<Listener*> listeners;
+	
+	void runStandard(int line,std::string const& data);
 	
 	public:
 	~Interpreter();
@@ -41,6 +32,8 @@ class Interpreter{
 	void run();
 	bool isParameter(int line);
 	Parameter* getParameter(int line);
+	bool isVariable(int line);
+	Variable* getVariable(int line);
 	int length();
 	std::string const& getData(int line);
 	std::string const& getData();
@@ -50,11 +43,9 @@ class Interpreter{
 	std::string const& getFunction(int line);
 	bool containsFunction(std::string const& function);
 	void append(std::string const& data);
-	
-	void setListener(Listener* listener){
-		listener->interpreter = this;
-		this->listener = listener;
-	}
+	void addListener(Listener* listener);
+	void removeListener(Listener* listener);
+	std::vector<Listener*> const& listListener();
 	
 	StringUtils* getStringUtils(){
 		if(this->strutils==NULL){
